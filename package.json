@@ -1,0 +1,12 @@
+{
+  "name": "api-plug",
+  "version": "1.0.0",
+  "description": "Tool to comunicate microservices",
+  "main": "index.js",
+  "author": "Oscar Granada <@ogranada>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "socket.io": "^2.0.3"
+  }
+}

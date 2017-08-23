@@ -7,31 +7,33 @@ function Plug(config) {
     this.host = config.host || '127.0.0.1';
     this.port = config.port || 6897;
     this.secure = config.secure || false;
-    this.url = (this.secure ? 'https' : 'http') + '://' + this.host + ':' + this.port;
-    this.fullurl = this.url + '/api';
     this.servers = {};
+    this.addServer(this.host, this.port, this.secure);
+}
+
+Plug.prototype.addServer = function Plug_addServer(host, port, secure) {
+    const url = (secure ? 'https' : 'http') + '://' + host + ':' + port;
+    const fullurl = url + '/api';
     this.ready = false;
     const me = this;
-    axios.get(this.fullurl)
+    axios.get(fullurl)
         .then(function (response) {
-            // console.log('Resp:', response.data);
             const baseInfo = response.data;
             const resources = baseInfo.resources;
             me.servers[baseInfo.name] = {};
             let idx, resource;
-            for (idx in resources) {
-                resource = resources[idx];
+            resources.forEach((resource) => {
                 me.servers[baseInfo.name][resource.name] = {
-                    path: me.url + resource.path,
+                    path: url + resource.path,
                     fields: resource.fields
-                }
-            }
+                };
+            });
             me.ready = true;
         })
         .catch(function (error) {
             console.log('Error:', error);
         });
-}
+};
 
 Plug.prototype.get = function Plug_getResource(server, resource, fields) {
     const me = this;

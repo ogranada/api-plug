@@ -41,6 +41,9 @@ Plug.prototype.get = function Plug_getResource(server, resource, fields) {
         const intrvl = setInterval(() => {
             if (me.ready) {
                 clearInterval(intrvl);
+                if(!me.servers[server] || !me.servers[server][resource]){
+                  return reject(new Error(`Invalid resource "${resource}"`));
+                }
                 axios.get(me.servers[server][resource].path + '?' + querystring.stringify(fields))
                     .then((response) => {
                         resolve(response.data);
@@ -79,11 +82,13 @@ Plug.prototype.update = function Plug_saveResource(server, resource, fields) {
         const intrvl = setInterval(() => {
             if (me.ready) {
                 clearInterval(intrvl);
-                axios.put(me.servers[server][resource].path, fields)
+                const targetPath = me.servers[server][resource].path + '/' + fields.id;
+                axios.put(targetPath, fields)
                     .then((response) => {
                         resolve(response.data);
                     })
                     .catch((error) => {
+                        console.log('error', error);
                         reject(error);
                     })
                     ;
